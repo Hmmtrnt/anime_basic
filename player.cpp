@@ -7,6 +7,8 @@ namespace
 {
 	// キャラクターアニメーション１コマ当たりのフレーム数
 	constexpr int kAnimeChangeFrame = 8;
+	// キャラクターの移動速度
+	constexpr int kSpeed = 5;
 }
 
 Player::Player()
@@ -39,23 +41,46 @@ void Player::update()
 	// パッド(もしくはキーボード)からの入力を取得する
 	int padState = GetJoypadInputState(DX_INPUT_KEY_PAD1);
 	bool isKey = false;
+	m_vec.x = kSpeed;
+	m_vec.y = kSpeed;
 	if (padState & PAD_INPUT_UP)
 	{
+		m_pos.y -= m_vec.y;
+		if (m_pos.y < -32)
+		{
+			m_pos.y = Game::kScreenHeight;
+		}
 		m_dirNo = 3;
 		isKey = true;
+
 	}
 	if (padState & PAD_INPUT_DOWN)
 	{
+		m_pos.y += m_vec.y;
+		if (m_pos.y > Game::kScreenHeight)
+		{
+			m_pos.y = 0;
+		}
 		m_dirNo = 0;
 		isKey = true;
 	}
 	if (padState & PAD_INPUT_LEFT)
 	{
+		m_pos.x -= m_vec.x;
+		if (m_pos.x < -32)
+		{
+			m_pos.x = Game::kScreenWidth;
+		}
 		m_dirNo = 1;
 		isKey = true;
 	}
 	if (padState & PAD_INPUT_RIGHT)
 	{
+		m_pos.x += m_vec.x;
+		if (m_pos.x > Game::kScreenWidth)
+		{
+			m_pos.x = 0;
+		}
 		m_dirNo = 2;
 		isKey = true;
 	}
@@ -69,7 +94,6 @@ void Player::update()
 
 	int tempAnimeNo = m_animeFrame / kAnimeChangeFrame;
 	m_animeNo = m_dirNo * kGraphicDivX + tempAnimeNo;
-
 }
 
 void Player::draw()
